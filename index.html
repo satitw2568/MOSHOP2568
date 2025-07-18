@@ -43,7 +43,7 @@
         const IMGBB_API_KEY = "6c9bea79ef607be32b6ad6c447c53b4d";
         
         // **Version Number**
-        const APP_VERSION = "V.180725 13:42";
+        const APP_VERSION = "V.180725 13:49";
 
 
         // --- Reusable Components ---
@@ -573,9 +573,9 @@
                  <div className="min-h-screen flex flex-col">
                     <div className="flex-grow">
                         {loading ? (
-                             <div className="min-h-screen flex flex-col justify-center items-center"><Spinner /><p className="text-gray-600 mt-2">Loading Products...</p></div>
+                             <div className="flex-grow flex items-center justify-center"><Spinner /><p className="text-gray-600 mt-2">Loading Products...</p></div>
                         ) : error ? (
-                            <div className="min-h-screen flex flex-col justify-center items-center p-4 text-center"><div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative" role="alert"><strong className="font-bold">Error!</strong><span className="block sm:inline ml-2">{error}</span></div><button onClick={handleLogout} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600 transition">Go to Login</button></div>
+                            <div className="flex-grow flex items-center justify-center p-4 text-center"><div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative" role="alert"><strong className="font-bold">Error!</strong><span className="block sm:inline ml-2">{error}</span></div><button onClick={handleLogout} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600 transition">Go to Login</button></div>
                         ) : (
                             <>
                                 {role === 'user' && <UserView products={products} onLogout={handleLogout} />}
