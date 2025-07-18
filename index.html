@@ -66,7 +66,7 @@
         const IMGBB_API_KEY = "6c9bea79ef607be32b6ad6c447c53b4d";
         
         // **Version Number**
-        const APP_VERSION = "V.180725 14:28";
+        const APP_VERSION = "V.180725 14:35";
 
 
         // --- Reusable Components ---
@@ -293,6 +293,11 @@
             const [isModalOpen, setIsModalOpen] = useState(false);
             const [editingProduct, setEditingProduct] = useState(null);
 
+            // **YOUR FIX**: Scroll to top when the component loads
+            useEffect(() => {
+                window.scrollTo(0, 0);
+            }, []);
+
             const openModal = (product = null) => {
                 setEditingProduct(product);
                 setIsModalOpen(true);
@@ -330,7 +335,15 @@
 
                     <div className="bg-white rounded-lg shadow-md overflow-x-auto">
                         <table className="w-full min-w-full text-sm text-left text-gray-500">
-                            <thead className="text-xs text-gray-700 uppercase bg-gray-50"><tr><th scope="col" className="px-6 py-3">Image</th><th scope="col" className="px-6 py-3">Name</th><th scope="col" className="px-6 py-3">Barcode</th><th scope="col" className="px-6 py-3">Price</th><th scope="col" className="px-6 py-3">Actions</th></tr></thead>
+                            <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                                <tr>
+                                    <th scope="col" className="px-6 py-3">Image</th>
+                                    <th scope="col" className="px-6 py-3">Name</th>
+                                    <th scope="col" className="px-6 py-3">Barcode</th>
+                                    <th scope="col" className="px-6 py-3">Price</th>
+                                    <th scope="col" className="px-6 py-3">Actions</th>
+                                </tr>
+                            </thead>
                             <tbody>
                                 {products.map(p => (
                                     <tr key={p.barcode} className="bg-white border-b hover:bg-gray-50">
@@ -405,19 +418,17 @@
                 const { name, value } = e.target;
                 setFormData(prev => ({ ...prev, [name]: value }));
                 
-                // **NEW**: Check for duplicate barcode on manual input
-                if (name === 'barcode' && !product) { // Only for new products
+                if (name === 'barcode' && !product) {
                     const isDuplicate = products.some(p => String(p.barcode) === String(value));
                     if (isDuplicate) {
                         setError(`Error: Barcode '${value}' already exists.`);
                     } else {
-                        setError(''); // Clear error if they type a unique code
+                        setError('');
                     }
                 }
             };
 
             const handleBarcodeScanSuccess = (decodedText) => {
-                // **NEW**: Check for duplicate immediately after scan
                 const isDuplicate = products.some(p => String(p.barcode) === String(decodedText));
                 if (isDuplicate) {
                     setError(`Error: Barcode '${decodedText}' already exists.`);
@@ -464,7 +475,6 @@
             const handleSave = async (e) => {
                 e.preventDefault();
                 
-                // Final duplicate check just in case
                 if (!product) {
                     const isDuplicate = products.some(p => String(p.barcode) === String(formData.barcode));
                     if (isDuplicate) {
