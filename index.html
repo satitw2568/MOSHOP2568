@@ -41,6 +41,9 @@
 
         // **API Key for Image Uploads**
         const IMGBB_API_KEY = "6c9bea79ef607be32b6ad6c447c53b4d";
+        
+        // **Version Number**
+        const APP_VERSION = "V.180725 13:42";
 
 
         // --- Reusable Components ---
@@ -49,6 +52,12 @@
             <div className={`flex justify-center items-center ${small ? 'p-1' : 'p-4'}`}>
                 <div className={`animate-spin rounded-full border-b-2 border-blue-500 ${small ? 'h-5 w-5' : 'h-8 w-8'}`}></div>
             </div>
+        );
+
+        const Footer = () => (
+            <footer className="w-full text-center p-4 text-gray-500 text-xs">
+                {APP_VERSION}
+            </footer>
         );
 
         const ProductCard = ({ product }) => (
@@ -105,44 +114,47 @@
             };
 
             return (
-                <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100 p-4">
-                    <div className="w-full max-w-sm bg-white p-8 rounded-xl shadow-lg text-center">
-                        <i className="fas fa-barcode text-5xl text-blue-500 mb-4"></i>
-                        <h1 className="text-2xl font-bold text-gray-800 mb-6">Product Scanner</h1>
-                        
-                        <div className="mb-4">
-                            <input
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder="Enter Admin Password"
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                        </div>
-                        
-                        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+                <div className="min-h-screen flex flex-col">
+                    <div className="flex-grow flex items-center justify-center p-4">
+                        <div className="w-full max-w-sm bg-white p-8 rounded-xl shadow-lg text-center">
+                            <i className="fas fa-barcode text-5xl text-blue-500 mb-4"></i>
+                            <h1 className="text-2xl font-bold text-gray-800 mb-6">Product Scanner</h1>
+                            
+                            <div className="mb-4">
+                                <input
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    placeholder="Enter Admin Password"
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            
+                            {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
-                        <button 
-                            onClick={handleAdminLogin}
-                            disabled={loading}
-                            className="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-300 flex items-center justify-center disabled:bg-blue-300"
-                        >
-                            {loading ? <Spinner /> : <> <i className="fas fa-user-shield mr-2"></i> Login as Admin </>}
-                        </button>
-                        
-                        <div className="my-4 flex items-center">
-                            <hr className="flex-grow border-t border-gray-300" />
-                            <span className="mx-2 text-gray-500">OR</span>
-                            <hr className="flex-grow border-t border-gray-300" />
-                        </div>
+                            <button 
+                                onClick={handleAdminLogin}
+                                disabled={loading}
+                                className="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-300 flex items-center justify-center disabled:bg-blue-300"
+                            >
+                                {loading ? <Spinner /> : <> <i className="fas fa-user-shield mr-2"></i> Login as Admin </>}
+                            </button>
+                            
+                            <div className="my-4 flex items-center">
+                                <hr className="flex-grow border-t border-gray-300" />
+                                <span className="mx-2 text-gray-500">OR</span>
+                                <hr className="flex-grow border-t border-gray-300" />
+                            </div>
 
-                        <button 
-                            onClick={() => onLogin('user')}
-                            className="w-full bg-gray-700 text-white font-bold py-3 px-4 rounded-lg hover:bg-gray-800 transition duration-300 flex items-center justify-center"
-                        >
-                            <i className="fas fa-user mr-2"></i> Continue as User
-                        </button>
+                            <button 
+                                onClick={() => onLogin('user')}
+                                className="w-full bg-gray-700 text-white font-bold py-3 px-4 rounded-lg hover:bg-gray-800 transition duration-300 flex items-center justify-center"
+                            >
+                                <i className="fas fa-user mr-2"></i> Continue as User
+                            </button>
+                        </div>
                     </div>
+                    <Footer />
                 </div>
             );
         }
@@ -315,7 +327,6 @@
             );
         }
         
-        // **NEW**: Helper function to resize the image before upload
         const resizeImage = (file, maxSize) => {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -351,7 +362,7 @@
                             } else {
                                 reject(new Error('Canvas to Blob conversion failed'));
                             }
-                        }, file.type, 0.9); // 0.9 is image quality
+                        }, file.type, 0.9);
                     };
                     img.onerror = reject;
                 };
@@ -377,7 +388,6 @@
                 setIsScanning(false);
             };
             
-            // **UPDATED**: This function now resizes the image before uploading
             const handleImageUpload = async (event) => {
                 const file = event.target.files[0];
                 if (!file) return;
@@ -391,7 +401,7 @@
                 setError('');
 
                 try {
-                    const resizedBlob = await resizeImage(file, 400); // Resize to max 400px
+                    const resizedBlob = await resizeImage(file, 200);
 
                     const body = new FormData();
                     body.append('image', resizedBlob, file.name);
@@ -554,16 +564,30 @@
                 setProducts([]);
             };
 
-            if (!role) return <LoginScreen onLogin={handleLogin} />;
-            if (loading) return <div className="min-h-screen flex flex-col justify-center items-center"><Spinner /><p className="text-gray-600 mt-2">Loading Products...</p></div>;
-            if (error) return <div className="min-h-screen flex flex-col justify-center items-center p-4 text-center"><div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative" role="alert"><strong className="font-bold">Error!</strong><span className="block sm:inline ml-2">{error}</span></div><button onClick={handleLogout} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600 transition">Go to Login</button></div>;
-
-            return (
-                <main className="bg-gray-100 min-h-screen">
-                    {role === 'user' && <UserView products={products} onLogout={handleLogout} />}
-                    {role === 'admin' && <AdminView products={products} adminPassword={adminPassword} onLogout={handleLogout} refreshProducts={fetchProducts} />}
-                </main>
+            // **FIXED**: Main container logic to prevent scrolling issue
+            if (!role) {
+                return <LoginScreen onLogin={handleLogin} />;
+            }
+            
+            const mainContent = (
+                 <div className="min-h-screen flex flex-col">
+                    <div className="flex-grow">
+                        {loading ? (
+                             <div className="min-h-screen flex flex-col justify-center items-center"><Spinner /><p className="text-gray-600 mt-2">Loading Products...</p></div>
+                        ) : error ? (
+                            <div className="min-h-screen flex flex-col justify-center items-center p-4 text-center"><div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative" role="alert"><strong className="font-bold">Error!</strong><span className="block sm:inline ml-2">{error}</span></div><button onClick={handleLogout} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600 transition">Go to Login</button></div>
+                        ) : (
+                            <>
+                                {role === 'user' && <UserView products={products} onLogout={handleLogout} />}
+                                {role === 'admin' && <AdminView products={products} adminPassword={adminPassword} onLogout={handleLogout} refreshProducts={fetchProducts} />}
+                            </>
+                        )}
+                    </div>
+                    <Footer />
+                </div>
             );
+
+            return <main className="bg-gray-100">{mainContent}</main>;
         }
 
         const container = document.getElementById('root');
