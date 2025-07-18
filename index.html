@@ -28,7 +28,7 @@
             70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
             100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
         }
-        /* **NEW**: Styling for the red scan line */
+        /* Styling for the red scan line */
         .scanner-container {
             position: relative;
             margin-bottom: 1.5rem;
@@ -66,7 +66,7 @@
         const IMGBB_API_KEY = "6c9bea79ef607be32b6ad6c447c53b4d";
         
         // **Version Number**
-        const APP_VERSION = "V.180725 14:17";
+        const APP_VERSION = "V.180725 14:23";
 
 
         // --- Reusable Components ---
@@ -345,7 +345,7 @@
                         </table>
                     </div>
 
-                    {isModalOpen && <ProductModal product={editingProduct} onClose={closeModal} adminPassword={adminPassword} refreshProducts={refreshProducts} />}
+                    {isModalOpen && <ProductModal product={editingProduct} products={products} onClose={closeModal} adminPassword={adminPassword} refreshProducts={refreshProducts} />}
                 </div>
             );
         }
@@ -393,7 +393,7 @@
             });
         };
 
-        const ProductModal = ({ product, onClose, adminPassword, refreshProducts }) => {
+        const ProductModal = ({ product, products, onClose, adminPassword, refreshProducts }) => {
             const [formData, setFormData] = useState({ barcode: product?.barcode || '', name: product?.name || '', price: product?.price || '', imageUrl: product?.imageUrl || '', notes: product?.notes || '' });
             const [loading, setLoading] = useState(false);
             const [error, setError] = useState('');
@@ -446,6 +446,16 @@
 
             const handleSave = async (e) => {
                 e.preventDefault();
+                
+                // **NEW**: Check for duplicate barcode before saving
+                if (!product) { // Only check for new products
+                    const isDuplicate = products.some(p => String(p.barcode) === String(formData.barcode));
+                    if (isDuplicate) {
+                        setError(`Error: Barcode '${formData.barcode}' already exists.`);
+                        return; // Stop the save process
+                    }
+                }
+
                 setLoading(true);
                 setError('');
                 const action = product ? 'updateProduct' : 'addProduct';
