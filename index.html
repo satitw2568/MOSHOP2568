@@ -123,10 +123,159 @@
         const IMGBB_API_KEY = "6c9bea79ef607be32b6ad6c447c53b4d";
         
         // **Version Number**
-        const APP_VERSION = "V.180725 15:35";
+        const APP_VERSION = "V.180725 16:30";
 
+        // --- Translation Mapping Table ---
+        // You can edit the Thai (th) translations here
+        const translations = {
+            en: {
+                // General
+                barcode: "Barcode",
+                price: "Price",
+                name: "Name",
+                notes: "Notes",
+                actions: "Actions",
+                error: "Error",
+                cancel: "Cancel",
+                save: "Save",
+                image: "Image",
+                noImage: "No Image",
+                currency: "THB",
+                errorOccurred: "An error occurred. Please check your connection.",
+                // Login Screen
+                loginTitle: "MO Shop Scanner",
+                adminPasswordPlaceholder: "Enter Admin Password",
+                adminPasswordError: "Please enter the admin password.",
+                loginFailed: "Login failed.",
+                loginAsAdmin: "Login as Admin",
+                orDivider: "OR",
+                continueAsUser: "Continue as User",
+                goToLogin: "Go to Login",
+                // App Loading/Error
+                loadingProducts: "Loading Products...",
+                configError: "Configuration Error: Please set your Google Apps Script URL in the code.",
+                fetchError: "Failed to fetch products.",
+                connectionError: "An error occurred. Please check your connection and script URL.",
+                // User View
+                userTitle: "Scan & Search",
+                startScanning: "Start Scanning",
+                scanning: "Scanning...",
+                cameraError: "Could not start camera. Please grant permissions.",
+                cameraErrorHelp: "Make sure you've granted camera permissions and are using HTTPS.",
+                switchCamera: "Switch camera",
+                scanResultTitle: "Scan Result",
+                productNotFound: "Product Not Found",
+                clearResult: "Clear Result",
+                searchPlaceholder: "Search by product name or barcode...",
+                noMatch: "No products match your search.",
+                // Admin View
+                adminTitle: "Admin Panel",
+                deleteConfirm: "Are you sure you want to delete this product?",
+                deleteError: "An error occurred while deleting.",
+                // Product Modal
+                modalEditTitle: "Edit Product",
+                modalAddTitle: "Add New Product",
+                imgbbError: "Image upload requires an ImgBB API key. Please configure it in the script.",
+                imgUploadFailed: "Image upload failed:",
+                barcodeExistsError: (barcode) => `Error: Barcode '${barcode}' already exists.`,
+                cancelScan: "Cancel Scan",
+                barcodeLabel: "Barcode",
+                barcodePlaceholder: "Scan or type barcode",
+                nameLabel: "Product Name",
+                namePlaceholder: "e.g. Green Tea",
+                priceLabel: "Price (THB)",
+                pricePlaceholder: "e.g. 25",
+                imageUrlLabel: "Image URL",
+                imageUrlPlaceholder: "Take photo or paste URL",
+                uploadingImage: "Uploading image...",
+                notesLabel: "Notes",
+                notesPlaceholder: "(Optional)",
+                saveFailed: "Failed to save product.",
+            },
+            th: {
+                // General
+                barcode: "บาร์โค้ด",
+                price: "ราคา",
+                name: "ชื่อ",
+                notes: "หมายเหตุ",
+                actions: "จัดการ",
+                error: "ข้อผิดพลาด",
+                cancel: "ยกเลิก",
+                save: "บันทึก",
+                image: "รูปภาพ",
+                noImage: "ไม่มีรูป",
+                currency: "บาท",
+                errorOccurred: "เกิดข้อผิดพลาด กรุณาตรวจสอบการเชื่อมต่อของคุณ",
+                // Login Screen
+                loginTitle: "MO Shop Scanner",
+                adminPasswordPlaceholder: "ใส่รหัสผ่านผู้ดูแลระบบ",
+                adminPasswordError: "กรุณาใส่รหัสผ่านผู้ดูแลระบบ",
+                loginFailed: "การเข้าสู่ระบบล้มเหลว",
+                loginAsAdmin: "เข้าสู่ระบบแอดมิน",
+                orDivider: "หรือ",
+                continueAsUser: "เข้าสู่ระบบผู้ใช้งาน",
+                goToLogin: "ไปที่หน้าล็อกอิน",
+                // App Loading/Error
+                loadingProducts: "กำลังโหลดรายการสินค้า...",
+                configError: "ข้อผิดพลาดการตั้งค่า: กรุณาตั้งค่า URL ของ Google Apps Script ในโค้ด",
+                fetchError: "ไม่สามารถดึงข้อมูลสินค้าได้",
+                connectionError: "เกิดข้อผิดพลาด กรุณาตรวจสอบการเชื่อมต่อและ URL ของสคริปต์",
+                // User View
+                userTitle: "สแกนและค้นหา",
+                startScanning: "เริ่มสแกน",
+                scanning: "กำลังสแกน...",
+                cameraError: "ไม่สามารถเปิดกล้องได้ กรุณาให้สิทธิ์การเข้าถึง",
+                cameraErrorHelp: "โปรดตรวจสอบว่าคุณได้ให้สิทธิ์ในการเข้าถึงกล้องและใช้ HTTPS",
+                switchCamera: "สลับกล้อง",
+                scanResultTitle: "ผลการสแกน",
+                productNotFound: "ไม่พบสินค้านี้",
+                clearResult: "ล้างผลลัพธ์",
+                searchPlaceholder: "ค้นหาด้วยชื่อสินค้าหรือบาร์โค้ด...",
+                noMatch: "ไม่พบสินค้าที่ตรงกับการค้นหา",
+                // Admin View
+                adminTitle: "แผงควบคุมผู้ดูแล",
+                deleteConfirm: "คุณแน่ใจหรือไม่ว่าต้องการลบสินค้านี้?",
+                deleteError: "เกิดข้อผิดพลาดขณะทำการลบ",
+                // Product Modal
+                modalEditTitle: "แก้ไขสินค้า",
+                modalAddTitle: "เพิ่มสินค้าใหม่",
+                imgbbError: "การอัปโหลดรูปภาพต้องใช้ ImgBB API key กรุณาตั้งค่าในสคริปต์",
+                imgUploadFailed: "การอัปโหลดรูปภาพล้มเหลว:",
+                barcodeExistsError: (barcode) => `ข้อผิดพลาด: บาร์โค้ด '${barcode}' นี้มีอยู่แล้ว`,
+                cancelScan: "ยกเลิกการสแกน",
+                barcodeLabel: "บาร์โค้ด",
+                barcodePlaceholder: "สแกนหรือพิมพ์บาร์โค้ด",
+                nameLabel: "ชื่อสินค้า",
+                namePlaceholder: "เช่น ชาเขียว",
+                priceLabel: "ราคา (บาท)",
+                pricePlaceholder: "เช่น 25",
+                imageUrlLabel: "URL รูปภาพ",
+                imageUrlPlaceholder: "ถ่ายภาพหรือวาง URL",
+                uploadingImage: "กำลังอัปโหลดรูปภาพ...",
+                notesLabel: "หมายเหตุ",
+                notesPlaceholder: "(ถ้ามี)",
+                saveFailed: "บันทึกสินค้าไม่สำเร็จ",
+            }
+        };
 
         // --- Reusable Components ---
+
+        const LanguageSwitcher = ({ lang, setLang }) => (
+            <div className="absolute top-4 right-4 bg-white rounded-full shadow-md p-1 flex items-center space-x-1">
+                <button 
+                    onClick={() => setLang('th')}
+                    className={`px-3 py-1 rounded-full text-sm font-semibold transition-colors ${lang === 'th' ? 'bg-blue-600 text-white' : 'bg-transparent text-gray-600'}`}
+                >
+                    ไทย
+                </button>
+                <button 
+                    onClick={() => setLang('en')}
+                    className={`px-3 py-1 rounded-full text-sm font-semibold transition-colors ${lang === 'en' ? 'bg-blue-600 text-white' : 'bg-transparent text-gray-600'}`}
+                >
+                    Eng
+                </button>
+            </div>
+        );
 
         const Spinner = ({ small }) => (
             <div className={`flex justify-center items-center ${small ? 'p-1' : 'p-4'}`}>
@@ -140,20 +289,20 @@
             </footer>
         );
 
-        const ProductCard = ({ product }) => (
+        const ProductCard = ({ product, t }) => (
             <div className="bg-white rounded-xl shadow-md overflow-hidden transform hover:scale-105 transition-transform duration-300 mobile-card">
                 <div className="w-full h-48 bg-gray-100 flex items-center justify-center">
                     <img 
-                        src={product.imageUrl || 'https://placehold.co/600x400/e2e8f0/cbd5e0?text=No+Image'} 
+                        src={product.imageUrl || `https://placehold.co/600x400/e2e8f0/cbd5e0?text=${t('noImage')}`} 
                         alt={product.name}
                         className="max-w-full max-h-full object-contain"
-                        onError={(e) => { e.target.onerror = null; e.target.src='https://placehold.co/600x400/e2e8f0/cbd5e0?text=No+Image'; }}
+                        onError={(e) => { e.target.onerror = null; e.target.src=`https://placehold.co/600x400/e2e8f0/cbd5e0?text=${t('noImage')}`; }}
                     />
                 </div>
                 <div className="p-4">
                     <h3 className="font-bold text-lg text-gray-800">{product.name}</h3>
-                    <p className="text-xl font-semibold text-blue-600">THB {product.price ? parseFloat(product.price).toFixed(0) : '0'}</p>
-                    <p className="text-sm text-gray-500 mt-2">Barcode: {product.barcode}</p>
+                    <p className="text-xl font-semibold text-blue-600">{t('currency')} {product.price ? parseFloat(product.price).toFixed(0) : '0'}</p>
+                    <p className="text-sm text-gray-500 mt-2">{t('barcode')}: {product.barcode}</p>
                     {product.notes && <p className="text-sm text-gray-600 mt-2 bg-gray-100 p-2 rounded-md">{product.notes}</p>}
                 </div>
             </div>
@@ -161,14 +310,14 @@
 
         // --- Main App Views ---
 
-        function LoginScreen({ onLogin }) {
+        function LoginScreen({ onLogin, t, lang, setLang }) {
             const [password, setPassword] = useState('');
             const [error, setError] = useState('');
             const [loading, setLoading] = useState(false);
 
             const handleAdminLogin = async () => {
                 if (!password) {
-                    setError('Please enter the admin password.');
+                    setError(t('adminPasswordError'));
                     return;
                 }
                 setError('');
@@ -184,10 +333,10 @@
                     if (result.status === 'success') {
                         onLogin('admin', password);
                     } else {
-                        setError(result.message || 'Login failed.');
+                        setError(result.message || t('loginFailed'));
                     }
                 } catch (err) {
-                    setError('An error occurred. Please check your connection.');
+                    setError(t('errorOccurred'));
                 } finally {
                     setLoading(false);
                 }
@@ -195,6 +344,7 @@
 
             return (
                 <div className="min-h-screen flex flex-col">
+                    <LanguageSwitcher lang={lang} setLang={setLang} />
                     <div className="flex-grow flex items-center justify-center p-4">
                         <div className="w-full max-w-sm bg-white p-8 rounded-xl shadow-lg text-center">
                             <img 
@@ -202,14 +352,14 @@
                                 alt="Logo"
                                 className="w-32 mx-auto mb-4"
                             />
-                            <h1 className="text-2xl font-bold text-gray-800 mb-6">MO Shop Scanner</h1>
+                            <h1 className="text-2xl font-bold text-gray-800 mb-6">{t('loginTitle')}</h1>
                             
                             <div className="mb-4">
                                 <input
                                     type="password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    placeholder="Enter Admin Password"
+                                    placeholder={t('adminPasswordPlaceholder')}
                                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 touch-input"
                                 />
                             </div>
@@ -221,12 +371,12 @@
                                 disabled={loading}
                                 className="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-300 flex items-center justify-center disabled:bg-blue-300 touch-button"
                             >
-                                {loading ? <Spinner /> : <> <i className="fas fa-user-shield mr-2"></i> Login as Admin </>}
+                                {loading ? <Spinner /> : <> <i className="fas fa-user-shield mr-2"></i> {t('loginAsAdmin')} </>}
                             </button>
                             
                             <div className="my-4 flex items-center">
                                 <hr className="flex-grow border-t border-gray-300" />
-                                <span className="mx-2 text-gray-500">OR</span>
+                                <span className="mx-2 text-gray-500">{t('orDivider')}</span>
                                 <hr className="flex-grow border-t border-gray-300" />
                             </div>
 
@@ -234,7 +384,7 @@
                                 onClick={() => onLogin('user')}
                                 className="w-full bg-gray-700 text-white font-bold py-3 px-4 rounded-lg hover:bg-gray-800 transition duration-300 flex items-center justify-center touch-button"
                             >
-                                <i className="fas fa-user mr-2"></i> Continue as User
+                                <i className="fas fa-user mr-2"></i> {t('continueAsUser')}
                             </button>
                         </div>
                     </div>
@@ -243,7 +393,7 @@
             );
         }
 
-        function UserView({ products, onLogout }) {
+        function UserView({ products, onLogout, t }) {
             const [searchTerm, setSearchTerm] = useState('');
             const [scanResult, setScanResult] = useState(null);
             const [isScanning, setIsScanning] = useState(false);
@@ -289,15 +439,15 @@
                             const basicConfig = { fps: 15, qrbox: { width: 250, height: 250 } };
                             scanner.start({ facingMode: facingMode }, basicConfig, onScanSuccess, () => {})
                                 .catch(e => {
-                                    setCameraError("Could not start camera. Please grant permissions.");
+                                    setCameraError(t('cameraError'));
                                     setIsScanning(false);
                                 });
                         } else {
-                            setCameraError("Could not start camera. Please grant permissions.");
+                            setCameraError(t('cameraError'));
                             setIsScanning(false);
                         }
                     });
-            }, [facingMode, products]);
+            }, [facingMode, products, t]);
 
             useEffect(() => {
                 if (!isScanning) return;
@@ -327,7 +477,7 @@
             return (
                 <div className="w-full max-w-4xl mx-auto p-4 min-h-screen">
                     <header className="flex justify-between items-center mb-6 mobile-header">
-                        <h1 className="text-2xl font-bold text-gray-800">Scan & Search</h1>
+                        <h1 className="text-2xl font-bold text-gray-800">{t('userTitle')}</h1>
                         <div className="flex space-x-2">
                             <button onClick={handleReset} className="bg-gray-500 text-white px-3 py-2 rounded-lg shadow hover:bg-gray-600 transition touch-button">
                                 <i className="fas fa-sync-alt"></i>
@@ -344,14 +494,14 @@
                             disabled={isScanning} 
                             className={`w-full text-white font-bold py-4 px-4 rounded-xl shadow-lg transition-all duration-300 flex items-center justify-center text-lg ${isScanning ? 'bg-gray-400' : 'bg-blue-600 pulse'} disabled:cursor-not-allowed touch-button`}
                         >
-                            {isScanning ? <><i className="fas fa-spinner fa-spin mr-2"></i> Scanning...</> : <><i className="fas fa-camera mr-2"></i> Start Scanning</>}
+                            {isScanning ? <><i className="fas fa-spinner fa-spin mr-2"></i> {t('scanning')}</> : <><i className="fas fa-camera mr-2"></i> {t('startScanning')}</>}
                         </button>
                     </div>
 
                     {cameraError && (
                         <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg">
                             <p className="font-medium">{cameraError}</p>
-                            <p className="text-sm mt-1">Make sure you've granted camera permissions and are using HTTPS.</p>
+                            <p className="text-sm mt-1">{t('cameraErrorHelp')}</p>
                         </div>
                     )}
 
@@ -361,7 +511,7 @@
                             <button 
                                 onClick={toggleCamera}
                                 className="camera-toggle"
-                                title="Switch camera"
+                                title={t('switchCamera')}
                             >
                                 <i className="fas fa-sync-alt"></i>
                             </button>
@@ -370,13 +520,13 @@
 
                     {scanResult && (
                         <div className="mb-6 p-4 bg-white rounded-xl shadow-lg">
-                            <h2 className="text-xl font-bold mb-4 text-center">Scan Result</h2>
+                            <h2 className="text-xl font-bold mb-4 text-center">{t('scanResultTitle')}</h2>
                             {(() => {
-                                if (scanResult.error) return <div className="text-center p-4 bg-yellow-100 text-yellow-800 rounded-md"><p className="font-bold">Error</p><p>{scanResult.error}</p></div>;
-                                if (scanResult.notFound) return <div className="text-center p-4 bg-red-100 text-red-700 rounded-md"><p className="font-bold">Product Not Found</p><p>Barcode: {scanResult.barcode}</p></div>;
-                                return <ProductCard product={scanResult} />;
+                                if (scanResult.error) return <div className="text-center p-4 bg-yellow-100 text-yellow-800 rounded-md"><p className="font-bold">{t('error')}</p><p>{scanResult.error}</p></div>;
+                                if (scanResult.notFound) return <div className="text-center p-4 bg-red-100 text-red-700 rounded-md"><p className="font-bold">{t('productNotFound')}</p><p>{t('barcode')}: {scanResult.barcode}</p></div>;
+                                return <ProductCard product={scanResult} t={t} />;
                             })()}
-                            <button onClick={() => setScanResult(null)} className="mt-4 w-full text-center text-blue-600 font-semibold">Clear Result</button>
+                            <button onClick={() => setScanResult(null)} className="mt-4 w-full text-center text-blue-600 font-semibold">{t('clearResult')}</button>
                         </div>
                     )}
                     
@@ -387,7 +537,7 @@
                             </span>
                             <input 
                                 type="text" 
-                                placeholder="Search by product name or barcode..." 
+                                placeholder={t('searchPlaceholder')}
                                 value={searchTerm} 
                                 onChange={e => setSearchTerm(e.target.value)} 
                                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 touch-input"
@@ -398,8 +548,8 @@
                     {searchTerm && (
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-6">
                             {filteredProducts.length > 0 ? 
-                                filteredProducts.map(p => <ProductCard key={p.barcode} product={p} />) : 
-                                <p className="col-span-full text-center text-gray-500 py-6">No products match your search.</p>
+                                filteredProducts.map(p => <ProductCard key={p.barcode} product={p} t={t} />) : 
+                                <p className="col-span-full text-center text-gray-500 py-6">{t('noMatch')}</p>
                             }
                         </div>
                     )}
@@ -407,7 +557,7 @@
             );
         }
 
-        function AdminView({ products, adminPassword, onLogout, refreshProducts }) {
+        function AdminView({ products, adminPassword, onLogout, refreshProducts, t }) {
             const [isModalOpen, setIsModalOpen] = useState(false);
             const [editingProduct, setEditingProduct] = useState(null);
 
@@ -426,24 +576,24 @@
             };
 
             const handleDelete = async (barcode) => {
-                if (!window.confirm("Are you sure you want to delete this product?")) return;
+                if (!window.confirm(t('deleteConfirm'))) return;
                 try {
                     const response = await fetch(SCRIPT_URL, { method: 'POST', redirect: "follow", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ action: 'deleteProduct', barcode, password: adminPassword }) });
                     const result = await response.json();
                     if (result.status === 'success') {
                         refreshProducts();
                     } else {
-                        alert(`Error: ${result.message}`);
+                        alert(`${t('error')}: ${result.message}`);
                     }
                 } catch (err) {
-                    alert('An error occurred while deleting.');
+                    alert(t('deleteError'));
                 }
             };
 
             return (
                 <div className="w-full max-w-6xl mx-auto p-4 min-h-screen">
                     <header className="flex justify-between items-center mb-6 mobile-header">
-                        <h1 className="text-2xl font-bold text-gray-800">Admin Panel</h1>
+                        <h1 className="text-2xl font-bold text-gray-800">{t('adminTitle')}</h1>
                         <div className="flex space-x-2">
                             <button onClick={() => openModal()} className="bg-green-500 text-white px-3 py-2 rounded-lg shadow hover:bg-green-600 transition touch-button">
                                 <i className="fas fa-plus"></i>
@@ -458,11 +608,11 @@
                         <table className="w-full min-w-full text-sm text-left text-gray-500">
                             <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                                 <tr>
-                                    <th scope="col" className="px-4 py-3">Image</th>
-                                    <th scope="col" className="px-4 py-3">Name</th>
-                                    <th scope="col" className="px-4 py-3">Barcode</th>
-                                    <th scope="col" className="px-4 py-3">Price</th>
-                                    <th scope="col" className="px-4 py-3">Actions</th>
+                                    <th scope="col" className="px-4 py-3">{t('image')}</th>
+                                    <th scope="col" className="px-4 py-3">{t('name')}</th>
+                                    <th scope="col" className="px-4 py-3">{t('barcode')}</th>
+                                    <th scope="col" className="px-4 py-3">{t('price')}</th>
+                                    <th scope="col" className="px-4 py-3">{t('actions')}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -470,12 +620,12 @@
                                     <tr key={p.barcode} className="bg-white border-b hover:bg-gray-50">
                                         <td className="px-4 py-3">
                                             <div className="w-10 h-10 bg-gray-200 flex items-center justify-center rounded-md overflow-hidden">
-                                                <img src={p.imageUrl || 'https://placehold.co/100x100/e2e8f0/cbd5e0?text=N/A'} alt={p.name} className="max-w-full max-h-full object-contain"/>
+                                                <img src={p.imageUrl || `https://placehold.co/100x100/e2e8f0/cbd5e0?text=N/A`} alt={p.name} className="max-w-full max-h-full object-contain"/>
                                             </div>
                                         </td>
                                         <td className="px-4 py-3 font-medium text-gray-900">{p.name}</td>
                                         <td className="px-4 py-3">{p.barcode}</td>
-                                        <td className="px-4 py-3">THB {p.price ? parseFloat(p.price).toFixed(0) : '0'}</td>
+                                        <td className="px-4 py-3">{t('currency')} {p.price ? parseFloat(p.price).toFixed(0) : '0'}</td>
                                         <td className="px-4 py-3">
                                             <button onClick={() => openModal(p)} className="text-blue-600 hover:text-blue-800 mr-3 text-lg">
                                                 <i className="fas fa-edit"></i>
@@ -490,7 +640,7 @@
                         </table>
                     </div>
 
-                    {isModalOpen && <ProductModal product={editingProduct} products={products} onClose={closeModal} adminPassword={adminPassword} refreshProducts={refreshProducts} />}
+                    {isModalOpen && <ProductModal product={editingProduct} products={products} onClose={closeModal} adminPassword={adminPassword} refreshProducts={refreshProducts} t={t} />}
                 </div>
             );
         }
@@ -538,7 +688,7 @@
             });
         };
 
-        const ProductModal = ({ product, products, onClose, adminPassword, refreshProducts }) => {
+        const ProductModal = ({ product, products, onClose, adminPassword, refreshProducts, t }) => {
             const [formData, setFormData] = useState({ barcode: product?.barcode || '', name: product?.name || '', price: product?.price || '', imageUrl: product?.imageUrl || '', notes: product?.notes || '' });
             const [loading, setLoading] = useState(false);
             const [error, setError] = useState('');
@@ -559,7 +709,7 @@
                 if (name === 'barcode' && !product) {
                     const isDuplicate = products.some(p => String(p.barcode) === String(value));
                     if (isDuplicate) {
-                        setError(`Error: Barcode '${value}' already exists.`);
+                        setError(t('barcodeExistsError')(value));
                     } else {
                         setError('');
                     }
@@ -569,7 +719,7 @@
             const handleBarcodeScanSuccess = (decodedText) => {
                 const isDuplicate = products.some(p => String(p.barcode) === String(decodedText));
                 if (isDuplicate) {
-                    setError(`Error: Barcode '${decodedText}' already exists.`);
+                    setError(t('barcodeExistsError')(decodedText));
                 } else {
                     setError('');
                 }
@@ -582,7 +732,7 @@
                 if (!file) return;
 
                 if (IMGBB_API_KEY === "YOUR_IMGBB_API_KEY_HERE") {
-                    setError("Image upload requires an ImgBB API key. Please configure it in the script.");
+                    setError(t('imgbbError'));
                     return;
                 }
 
@@ -603,7 +753,7 @@
                         throw new Error(result.error.message || 'Failed to upload image.');
                     }
                 } catch (err) {
-                    setError(`Image upload failed: ${err.message}`);
+                    setError(`${t('imgUploadFailed')} ${err.message}`);
                 } finally {
                     setIsUploading(false);
                     if(imageUploadRef.current) imageUploadRef.current.value = "";
@@ -616,7 +766,7 @@
                 if (!product) {
                     const isDuplicate = products.some(p => String(p.barcode) === String(formData.barcode));
                     if (isDuplicate) {
-                        setError(`Error: Barcode '${formData.barcode}' already exists.`);
+                        setError(t('barcodeExistsError')(formData.barcode));
                         return;
                     }
                 }
@@ -631,10 +781,10 @@
                         await refreshProducts();
                         onClose();
                     } else {
-                        setError(result.message || 'Failed to save product.');
+                        setError(result.message || t('saveFailed'));
                     }
                 } catch (err) {
-                    setError('An error occurred. Please check your connection.');
+                    setError(t('errorOccurred'));
                 } finally {
                     setLoading(false);
                 }
@@ -664,7 +814,7 @@
                     <div className="bg-white rounded-xl shadow-xl w-full max-w-md my-8">
                         <form onSubmit={handleSave}>
                             <div className="p-6">
-                                <h2 className="text-2xl font-bold mb-4">{product ? 'Edit Product' : 'Add New Product'}</h2>
+                                <h2 className="text-2xl font-bold mb-4">{product ? t('modalEditTitle') : t('modalAddTitle')}</h2>
                                 {error && <p className="text-red-500 bg-red-100 p-2 rounded-md mb-4 text-sm">{error}</p>}
                                 
                                 {isScanning ? (
@@ -673,7 +823,7 @@
                                         <button 
                                             onClick={toggleCamera}
                                             className="camera-toggle"
-                                            title="Switch camera"
+                                            title={t('switchCamera')}
                                         >
                                             <i className="fas fa-sync-alt"></i>
                                         </button>
@@ -682,20 +832,20 @@
                                             onClick={() => setIsScanning(false)} 
                                             className="mt-3 w-full bg-red-500 text-white py-2 rounded-md touch-button"
                                         >
-                                            Cancel Scan
+                                            {t('cancelScan')}
                                         </button>
                                     </div>
                                 ) : (
                                     <div className="space-y-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700">Barcode</label>
+                                            <label className="block text-sm font-medium text-gray-700">{t('barcodeLabel')}</label>
                                             <div className="mt-1 flex rounded-md shadow-sm">
                                                 <input 
                                                     type="text" 
                                                     name="barcode" 
                                                     value={formData.barcode} 
                                                     onChange={handleFormChange} 
-                                                    placeholder="Scan or type barcode" 
+                                                    placeholder={t('barcodePlaceholder')}
                                                     required 
                                                     disabled={!!product} 
                                                     className="flex-1 block w-full rounded-l-lg px-3 py-2 border-gray-300 focus:ring-blue-500 focus:border-blue-500 sm:text-sm disabled:bg-gray-100 touch-input"
@@ -712,40 +862,40 @@
                                         </div>
                                         
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700">Product Name</label>
+                                            <label className="block text-sm font-medium text-gray-700">{t('nameLabel')}</label>
                                             <input 
                                                 type="text" 
                                                 name="name" 
                                                 value={formData.name} 
                                                 onChange={handleFormChange} 
-                                                placeholder="e.g. Green Tea" 
+                                                placeholder={t('namePlaceholder')}
                                                 required 
                                                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm touch-input"
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700">Price (THB)</label>
+                                            <label className="block text-sm font-medium text-gray-700">{t('priceLabel')}</label>
                                             <input 
                                                 type="number" 
                                                 step="1" 
                                                 name="price" 
                                                 value={formData.price} 
                                                 onChange={handleFormChange} 
-                                                placeholder="e.g. 25" 
+                                                placeholder={t('pricePlaceholder')}
                                                 required 
                                                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm touch-input"
                                             />
                                         </div>
                                         
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700">Image URL</label>
+                                            <label className="block text-sm font-medium text-gray-700">{t('imageUrlLabel')}</label>
                                             <div className="mt-1 flex items-center">
                                                 <input 
                                                     type="url" 
                                                     name="imageUrl" 
                                                     value={formData.imageUrl} 
                                                     onChange={handleFormChange} 
-                                                    placeholder="Take photo or paste URL" 
+                                                    placeholder={t('imageUrlPlaceholder')}
                                                     className="flex-1 block w-full px-3 py-2 border border-gray-300 rounded-l-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm touch-input"
                                                 />
                                                 <label className="cursor-pointer inline-flex items-center px-3 py-2 rounded-r-lg border border-l-0 border-gray-300 bg-gray-50 text-gray-500 hover:bg-gray-100 touch-input">
@@ -753,16 +903,16 @@
                                                     <input ref={imageUploadRef} type="file" accept="image/*" capture className="hidden" onChange={handleImageUpload} />
                                                 </label>
                                             </div>
-                                            {isUploading && <div className="mt-2 flex items-center text-sm text-gray-600"><Spinner small={true} /><span className="ml-2">Uploading image...</span></div>}
+                                            {isUploading && <div className="mt-2 flex items-center text-sm text-gray-600"><Spinner small={true} /><span className="ml-2">{t('uploadingImage')}</span></div>}
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700">Notes</label>
+                                            <label className="block text-sm font-medium text-gray-700">{t('notesLabel')}</label>
                                             <textarea 
                                                 name="notes" 
                                                 value={formData.notes} 
                                                 onChange={handleFormChange} 
-                                                placeholder="(Optional)" 
+                                                placeholder={t('notesPlaceholder')}
                                                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm touch-input"
                                             ></textarea>
                                         </div>
@@ -775,14 +925,14 @@
                                     onClick={onClose} 
                                     className="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 touch-button"
                                 >
-                                    Cancel
+                                    {t('cancel')}
                                 </button>
                                 <button 
                                     type="submit" 
                                     disabled={loading || isScanning || isUploading} 
                                     className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed touch-button"
                                 >
-                                    {loading ? <Spinner small={true} /> : 'Save'}
+                                    {loading ? <Spinner small={true} /> : t('save')}
                                 </button>
                             </div>
                         </form>
@@ -799,10 +949,23 @@
             const [products, setProducts] = useState([]);
             const [loading, setLoading] = useState(true);
             const [error, setError] = useState('');
+            const [lang, setLang] = useState(localStorage.getItem('appLang') || 'th');
+
+            useEffect(() => {
+              localStorage.setItem('appLang', lang);
+            }, [lang]);
+
+            const t = (key) => {
+              const translated = translations[lang][key];
+              if (typeof translated === 'function') {
+                return translated;
+              }
+              return translated || key;
+            };
 
             const fetchProducts = async () => {
                 if (SCRIPT_URL === "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE") {
-                    setError("Configuration Error: Please set your Google Apps Script URL in the code.");
+                    setError(t('configError'));
                     setLoading(false);
                     return;
                 }
@@ -814,10 +977,10 @@
                     if (result.status === 'success') {
                         setProducts(result.data.filter(p => p.barcode));
                     } else {
-                        setError(result.message || 'Failed to fetch products.');
+                        setError(result.message || t('fetchError'));
                     }
                 } catch (err) {
-                    setError('An error occurred. Please check your connection and script URL.');
+                    setError(t('connectionError'));
                 } finally {
                     setLoading(false);
                 }
@@ -840,7 +1003,7 @@
             };
 
             if (!role) {
-                return <LoginScreen onLogin={handleLogin} />;
+                return <LoginScreen onLogin={handleLogin} t={t} lang={lang} setLang={setLang} />;
             }
             
             return (
@@ -848,23 +1011,23 @@
                     <main className="flex-grow">
                         {loading ? (
                              <div className="flex h-full items-center justify-center p-8">
-                                <Spinner />
-                                <p className="text-gray-600 ml-2">Loading Products...</p>
+                                 <Spinner />
+                                 <p className="text-gray-600 ml-2">{t('loadingProducts')}</p>
                              </div>
                         ) : error ? (
                             <div className="flex h-full items-center justify-center p-8 text-center">
                                 <div>
                                     <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative" role="alert">
-                                        <strong className="font-bold">Error! </strong>
+                                        <strong className="font-bold">{t('error')}! </strong>
                                         <span className="block sm:inline">{error}</span>
                                     </div>
-                                    <button onClick={handleLogout} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600 transition touch-button">Go to Login</button>
+                                    <button onClick={handleLogout} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600 transition touch-button">{t('goToLogin')}</button>
                                 </div>
                             </div>
                         ) : (
                             <>
-                                {role === 'user' && <UserView products={products} onLogout={handleLogout} />}
-                                {role === 'admin' && <AdminView products={products} adminPassword={adminPassword} onLogout={handleLogout} refreshProducts={fetchProducts} />}
+                                {role === 'user' && <UserView products={products} onLogout={handleLogout} t={t} />}
+                                {role === 'admin' && <AdminView products={products} adminPassword={adminPassword} onLogout={handleLogout} refreshProducts={fetchProducts} t={t} />}
                             </>
                         )}
                     </main>
