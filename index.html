@@ -2,24 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Barcode Product Scanner</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mobile Barcode Scanner</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             -webkit-tap-highlight-color: transparent;
+            -webkit-overflow-scrolling: touch;
         }
         #scanner-region, #modal-scanner-region {
             border-radius: 0.5rem;
             overflow: hidden;
         }
-        /* Simple pulse animation for scanner button */
+        /* Pulse animation for scanner button */
         .pulse {
             animation: pulse-animation 2s infinite;
         }
@@ -28,19 +29,20 @@
             70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
             100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
         }
-        /* Styling for the red scan line */
+        /* Styling for the scan line */
         .scanner-container {
             position: relative;
             margin-bottom: 1.5rem;
+            overflow: hidden;
         }
         .scanner-container::after {
             content: '';
             position: absolute;
             top: 50%;
-            left: 5%; /* Don't go all the way to the edge */
+            left: 5%;
             right: 5%;
             height: 2px;
-            background: #ef4444; /* Red color */
+            background: #ef4444;
             box-shadow: 0 0 10px #ef4444;
             transform: translateY(-50%);
             animation: scan-line-pulse 1.5s infinite ease-in-out;
@@ -50,6 +52,61 @@
             0% { box-shadow: 0 0 5px rgba(239, 68, 68, 0.7); }
             50% { box-shadow: 0 0 20px rgba(239, 68, 68, 1); }
             100% { box-shadow: 0 0 5px rgba(239, 68, 68, 0.7); }
+        }
+        /* Mobile-specific optimizations */
+        .touch-button {
+            padding: 14px 16px;
+            font-size: 16px;
+            min-height: 54px;
+        }
+        .touch-input {
+            padding: 14px;
+            font-size: 16px;
+        }
+        .mobile-header {
+            padding: 12px;
+        }
+        .mobile-card {
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .mobile-footer {
+            padding: 12px;
+        }
+        /* iOS input zoom prevention */
+        @media screen and (-webkit-min-device-pixel-ratio:0) {
+            select:focus, textarea:focus, input:focus {
+                font-size: 16px;
+            }
+        }
+        /* Android Chrome address bar fix */
+        @media (max-height: 700px) {
+            .min-h-screen {
+                min-height: 100vh;
+                min-height: -webkit-fill-available;
+            }
+        }
+        /* Safe area padding for iPhone X+ */
+        @supports (padding: max(0px)) {
+            body, .safe-area-bottom {
+                padding-bottom: max(12px, env(safe-area-inset-bottom));
+            }
+        }
+        /* Camera toggle button */
+        .camera-toggle {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
         }
     </style>
 </head>
@@ -66,7 +123,7 @@
         const IMGBB_API_KEY = "6c9bea79ef607be32b6ad6c447c53b4d";
         
         // **Version Number**
-        const APP_VERSION = "V.180725 14:57";
+        const APP_VERSION = "V.180725 15:14 - Deepseek";
 
 
         // --- Reusable Components ---
@@ -78,14 +135,14 @@
         );
 
         const Footer = () => (
-            <footer className="w-full text-center p-4 text-gray-500 text-xs">
+            <footer className="w-full text-center p-4 text-gray-500 text-xs safe-area-bottom">
                 {APP_VERSION}
             </footer>
         );
 
         const ProductCard = ({ product }) => (
-            <div className="bg-white rounded-lg shadow-md overflow-hidden transform hover:scale-105 transition-transform duration-300">
-                <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
+            <div className="bg-white rounded-xl shadow-md overflow-hidden transform hover:scale-105 transition-transform duration-300 mobile-card">
+                <div className="w-full h-48 bg-gray-100 flex items-center justify-center">
                     <img 
                         src={product.imageUrl || 'https://placehold.co/600x400/e2e8f0/cbd5e0?text=No+Image'} 
                         alt={product.name}
@@ -141,7 +198,7 @@
                     <div className="flex-grow flex items-center justify-center p-4">
                         <div className="w-full max-w-sm bg-white p-8 rounded-xl shadow-lg text-center">
                             <i className="fas fa-barcode text-5xl text-blue-500 mb-4"></i>
-                            <h1 className="text-2xl font-bold text-gray-800 mb-6">Product Scanner</h1>
+                            <h1 className="text-2xl font-bold text-gray-800 mb-6">Mobile Scanner</h1>
                             
                             <div className="mb-4">
                                 <input
@@ -149,7 +206,7 @@
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="Enter Admin Password"
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 touch-input"
                                 />
                             </div>
                             
@@ -158,7 +215,7 @@
                             <button 
                                 onClick={handleAdminLogin}
                                 disabled={loading}
-                                className="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-300 flex items-center justify-center disabled:bg-blue-300"
+                                className="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-300 flex items-center justify-center disabled:bg-blue-300 touch-button"
                             >
                                 {loading ? <Spinner /> : <> <i className="fas fa-user-shield mr-2"></i> Login as Admin </>}
                             </button>
@@ -171,7 +228,7 @@
 
                             <button 
                                 onClick={() => onLogin('user')}
-                                className="w-full bg-gray-700 text-white font-bold py-3 px-4 rounded-lg hover:bg-gray-800 transition duration-300 flex items-center justify-center"
+                                className="w-full bg-gray-700 text-white font-bold py-3 px-4 rounded-lg hover:bg-gray-800 transition duration-300 flex items-center justify-center touch-button"
                             >
                                 <i className="fas fa-user mr-2"></i> Continue as User
                             </button>
@@ -186,11 +243,15 @@
             const [searchTerm, setSearchTerm] = useState('');
             const [scanResult, setScanResult] = useState(null);
             const [isScanning, setIsScanning] = useState(false);
+            const [facingMode, setFacingMode] = useState("environment");
+            const [cameraError, setCameraError] = useState(null);
             const scannerRef = useRef(null);
 
-            useEffect(() => {
-                if (!isScanning) return;
+            const toggleCamera = () => {
+                setFacingMode(prev => prev === "environment" ? "user" : "environment");
+            };
 
+            const startScanner = useCallback(() => {
                 if (!scannerRef.current) {
                     scannerRef.current = new Html5Qrcode("scanner-region");
                 }
@@ -209,34 +270,47 @@
                     }
                 };
 
-                const config = { fps: 30, qrbox: { width: 250, height: 250 }, videoConstraints: { facingMode: "environment", advanced: [{ focusMode: "continuous" }, { focusDistance: 0.1 }] } };
+                const config = { 
+                    fps: 30, 
+                    qrbox: { width: 250, height: 250 },
+                    videoConstraints: { 
+                        facingMode: facingMode,
+                        advanced: [{ focusMode: "continuous" }, { focusDistance: 0.1 }] 
+                    } 
+                };
                 
-                scanner.start({ facingMode: "environment" }, config, onScanSuccess, () => {})
+                scanner.start({ facingMode: facingMode }, config, onScanSuccess, () => {})
                     .catch(err => {
                         if (err.name === "OverconstrainedError" || err.name === "ConstraintNotSatisfiedError") {
                             const basicConfig = { fps: 15, qrbox: { width: 250, height: 250 } };
-                            scanner.start({ facingMode: "environment" }, basicConfig, onScanSuccess, () => {})
+                            scanner.start({ facingMode: facingMode }, basicConfig, onScanSuccess, () => {})
                                 .catch(e => {
-                                    setScanResult({ error: "Could not start camera. Please grant permissions." });
+                                    setCameraError("Could not start camera. Please grant permissions.");
                                     setIsScanning(false);
                                 });
                         } else {
-                            setScanResult({ error: "Could not start camera. Please grant permissions." });
+                            setCameraError("Could not start camera. Please grant permissions.");
                             setIsScanning(false);
                         }
                     });
+            }, [facingMode, products]);
+
+            useEffect(() => {
+                if (!isScanning) return;
+
+                startScanner();
 
                 return () => {
-                    if (scanner && scanner.isScanning) {
-                        scanner.stop().catch(err => console.error("Cleanup stop failed", err));
+                    if (scannerRef.current && scannerRef.current.isScanning) {
+                        scannerRef.current.stop().catch(err => console.error("Cleanup stop failed", err));
                     }
                 };
-            }, [isScanning, products]);
-
+            }, [isScanning, facingMode, startScanner]);
 
             const handleReset = () => {
                 setSearchTerm('');
                 setScanResult(null);
+                setCameraError(null);
                 if (isScanning) setIsScanning(false);
             };
 
@@ -247,26 +321,52 @@
             });
 
             return (
-                <div className="w-full max-w-4xl mx-auto p-4">
-                    <header className="flex justify-between items-center mb-6">
-                        <h1 className="text-3xl font-bold text-gray-800">Scan & Search</h1>
-                        <div>
-                            <button onClick={handleReset} className="bg-gray-500 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition mr-2"><i className="fas fa-sync-alt mr-1"></i> Reset</button>
-                            <button onClick={onLogout} className="bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-600 transition">Logout</button>
+                <div className="w-full max-w-4xl mx-auto p-4 min-h-screen">
+                    <header className="flex justify-between items-center mb-6 mobile-header">
+                        <h1 className="text-2xl font-bold text-gray-800">Scan & Search</h1>
+                        <div className="flex space-x-2">
+                            <button onClick={handleReset} className="bg-gray-500 text-white px-3 py-2 rounded-lg shadow hover:bg-gray-600 transition touch-button">
+                                <i className="fas fa-sync-alt"></i>
+                            </button>
+                            <button onClick={onLogout} className="bg-red-500 text-white px-3 py-2 rounded-lg shadow hover:bg-red-600 transition touch-button">
+                                <i className="fas fa-sign-out-alt"></i>
+                            </button>
                         </div>
                     </header>
 
-                    <div className="mb-6">
-                        <button onClick={() => setIsScanning(true)} disabled={isScanning} className={`w-full text-white font-bold py-4 px-4 rounded-lg shadow-lg transition-all duration-300 flex items-center justify-center text-lg ${isScanning ? 'bg-gray-400' : 'bg-blue-600 pulse'} disabled:cursor-not-allowed`}>
-                            {isScanning ? <><i className="fas fa-spinner fa-spin mr-2"></i> Scanning...</> : <><i className="fas fa-camera mr-2"></i> Start Camera Scan</>}
+                    <div className="mb-4">
+                        <button 
+                            onClick={() => setIsScanning(true)} 
+                            disabled={isScanning} 
+                            className={`w-full text-white font-bold py-4 px-4 rounded-xl shadow-lg transition-all duration-300 flex items-center justify-center text-lg ${isScanning ? 'bg-gray-400' : 'bg-blue-600 pulse'} disabled:cursor-not-allowed touch-button`}
+                        >
+                            {isScanning ? <><i className="fas fa-spinner fa-spin mr-2"></i> Scanning...</> : <><i className="fas fa-camera mr-2"></i> Start Scanning</>}
                         </button>
                     </div>
 
-                    {isScanning && <div className="scanner-container"><div id="scanner-region"></div></div>}
+                    {cameraError && (
+                        <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg">
+                            <p className="font-medium">{cameraError}</p>
+                            <p className="text-sm mt-1">Make sure you've granted camera permissions and are using HTTPS.</p>
+                        </div>
+                    )}
+
+                    {isScanning && (
+                        <div className="scanner-container relative">
+                            <div id="scanner-region" className="w-full aspect-square"></div>
+                            <button 
+                                onClick={toggleCamera}
+                                className="camera-toggle"
+                                title="Switch camera"
+                            >
+                                <i className="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                    )}
 
                     {scanResult && (
-                        <div className="mb-8 p-4 bg-white rounded-lg shadow-lg">
-                            <h2 className="text-xl font-bold mb-4 text-center">Last Scan Result</h2>
+                        <div className="mb-6 p-4 bg-white rounded-xl shadow-lg">
+                            <h2 className="text-xl font-bold mb-4 text-center">Scan Result</h2>
                             {(() => {
                                 if (scanResult.error) return <div className="text-center p-4 bg-yellow-100 text-yellow-800 rounded-md"><p className="font-bold">Error</p><p>{scanResult.error}</p></div>;
                                 if (scanResult.notFound) return <div className="text-center p-4 bg-red-100 text-red-700 rounded-md"><p className="font-bold">Product Not Found</p><p>Barcode: {scanResult.barcode}</p></div>;
@@ -277,12 +377,26 @@
                     )}
                     
                     <div className="mb-6">
-                        <div className="relative"><span className="absolute inset-y-0 left-0 flex items-center pl-3"><i className="fas fa-search text-gray-400"></i></span><input type="text" placeholder="Search by product name or barcode..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"/></div>
+                        <div className="relative">
+                            <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                                <i className="fas fa-search text-gray-400"></i>
+                            </span>
+                            <input 
+                                type="text" 
+                                placeholder="Search by product name or barcode..." 
+                                value={searchTerm} 
+                                onChange={e => setSearchTerm(e.target.value)} 
+                                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 touch-input"
+                            />
+                        </div>
                     </div>
 
                     {searchTerm && (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {filteredProducts.length > 0 ? filteredProducts.map(p => <ProductCard key={p.barcode} product={p} />) : <p className="col-span-full text-center text-gray-500">No products match your search.</p>}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-6">
+                            {filteredProducts.length > 0 ? 
+                                filteredProducts.map(p => <ProductCard key={p.barcode} product={p} />) : 
+                                <p className="col-span-full text-center text-gray-500 py-6">No products match your search.</p>
+                            }
                         </div>
                     )}
                 </div>
@@ -293,7 +407,6 @@
             const [isModalOpen, setIsModalOpen] = useState(false);
             const [editingProduct, setEditingProduct] = useState(null);
 
-            // **YOUR FIX**: Scroll to top when the component loads
             useEffect(() => {
                 window.scrollTo(0, 0);
             }, []);
@@ -324,34 +437,49 @@
             };
 
             return (
-                <div className="w-full max-w-6xl mx-auto p-4">
-                    <header className="flex justify-between items-center mb-6">
-                        <h1 className="text-3xl font-bold text-gray-800">Admin Panel</h1>
-                        <div>
-                            <button onClick={() => openModal()} className="bg-green-500 text-white px-4 py-2 rounded-lg shadow hover:bg-green-600 transition mr-2"><i className="fas fa-plus mr-1"></i> Add Product</button>
-                            <button onClick={onLogout} className="bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-600 transition">Logout</button>
+                <div className="w-full max-w-6xl mx-auto p-4 min-h-screen">
+                    <header className="flex justify-between items-center mb-6 mobile-header">
+                        <h1 className="text-2xl font-bold text-gray-800">Admin Panel</h1>
+                        <div className="flex space-x-2">
+                            <button onClick={() => openModal()} className="bg-green-500 text-white px-3 py-2 rounded-lg shadow hover:bg-green-600 transition touch-button">
+                                <i className="fas fa-plus"></i>
+                            </button>
+                            <button onClick={onLogout} className="bg-red-500 text-white px-3 py-2 rounded-lg shadow hover:bg-red-600 transition touch-button">
+                                <i className="fas fa-sign-out-alt"></i>
+                            </button>
                         </div>
                     </header>
 
-                    <div className="bg-white rounded-lg shadow-md overflow-x-auto">
+                    <div className="bg-white rounded-xl shadow-md overflow-x-auto">
                         <table className="w-full min-w-full text-sm text-left text-gray-500">
                             <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                                 <tr>
-                                    <th scope="col" className="px-6 py-3">Image</th>
-                                    <th scope="col" className="px-6 py-3">Name</th>
-                                    <th scope="col" className="px-6 py-3">Barcode</th>
-                                    <th scope="col" className="px-6 py-3">Price</th>
-                                    <th scope="col" className="px-6 py-3">Actions</th>
+                                    <th scope="col" className="px-4 py-3">Image</th>
+                                    <th scope="col" className="px-4 py-3">Name</th>
+                                    <th scope="col" className="px-4 py-3">Barcode</th>
+                                    <th scope="col" className="px-4 py-3">Price</th>
+                                    <th scope="col" className="px-4 py-3">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {products.map(p => (
                                     <tr key={p.barcode} className="bg-white border-b hover:bg-gray-50">
-                                        <td className="px-6 py-4"><div className="w-12 h-12 bg-gray-200 flex items-center justify-center rounded-md overflow-hidden"><img src={p.imageUrl || 'https://placehold.co/100x100/e2e8f0/cbd5e0?text=N/A'} alt={p.name} className="max-w-full max-h-full object-contain"/></div></td>
-                                        <td className="px-6 py-4 font-medium text-gray-900">{p.name}</td>
-                                        <td className="px-6 py-4">{p.barcode}</td>
-                                        <td className="px-6 py-4">THB {p.price ? parseFloat(p.price).toFixed(0) : '0'}</td>
-                                        <td className="px-6 py-4"><button onClick={() => openModal(p)} className="text-blue-600 hover:text-blue-800 mr-4"><i className="fas fa-edit"></i></button><button onClick={() => handleDelete(p.barcode)} className="text-red-600 hover:text-red-800"><i className="fas fa-trash"></i></button></td>
+                                        <td className="px-4 py-3">
+                                            <div className="w-10 h-10 bg-gray-200 flex items-center justify-center rounded-md overflow-hidden">
+                                                <img src={p.imageUrl || 'https://placehold.co/100x100/e2e8f0/cbd5e0?text=N/A'} alt={p.name} className="max-w-full max-h-full object-contain"/>
+                                            </div>
+                                        </td>
+                                        <td className="px-4 py-3 font-medium text-gray-900">{p.name}</td>
+                                        <td className="px-4 py-3">{p.barcode}</td>
+                                        <td className="px-4 py-3">THB {p.price ? parseFloat(p.price).toFixed(0) : '0'}</td>
+                                        <td className="px-4 py-3">
+                                            <button onClick={() => openModal(p)} className="text-blue-600 hover:text-blue-800 mr-3 text-lg">
+                                                <i className="fas fa-edit"></i>
+                                            </button>
+                                            <button onClick={() => handleDelete(p.barcode)} className="text-red-600 hover:text-red-800 text-lg">
+                                                <i className="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -412,7 +540,13 @@
             const [error, setError] = useState('');
             const [isScanning, setIsScanning] = useState(false);
             const [isUploading, setIsUploading] = useState(false);
+            const [facingMode, setFacingMode] = useState("environment");
             const imageUploadRef = useRef(null);
+            const scannerRef = useRef(null);
+
+            const toggleCamera = () => {
+                setFacingMode(prev => prev === "environment" ? "user" : "environment");
+            };
 
             const handleFormChange = (e) => {
                 const { name, value } = e.target;
@@ -502,41 +636,115 @@
                 }
             };
 
+            useEffect(() => {
+                if (isScanning && !scannerRef.current) {
+                    scannerRef.current = new Html5Qrcode("modal-scanner-region");
+                    const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+                    
+                    const successCallback = (decodedText) => {
+                        scannerRef.current.stop().then(() => handleBarcodeScanSuccess(decodedText)).catch(() => handleBarcodeScanSuccess(decodedText));
+                    };
+
+                    scannerRef.current.start({ facingMode: facingMode }, config, successCallback, () => {});
+                }
+
+                return () => {
+                    if (scannerRef.current && scannerRef.current.isScanning) {
+                        scannerRef.current.stop().catch(err => console.error("Modal scanner cleanup failed.", err));
+                    }
+                };
+            }, [isScanning, facingMode, handleBarcodeScanSuccess]);
+
             return (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start z-50 p-4 overflow-y-auto">
-                    <div className="bg-white rounded-lg shadow-xl w-full max-w-md my-8">
+                    <div className="bg-white rounded-xl shadow-xl w-full max-w-md my-8">
                         <form onSubmit={handleSave}>
                             <div className="p-6">
                                 <h2 className="text-2xl font-bold mb-4">{product ? 'Edit Product' : 'Add New Product'}</h2>
                                 {error && <p className="text-red-500 bg-red-100 p-2 rounded-md mb-4 text-sm">{error}</p>}
                                 
                                 {isScanning ? (
-                                    <div>
-                                        <div className="scanner-container">
-                                            <div id="modal-scanner-region"></div>
-                                        </div>
-                                        <button type="button" onClick={() => setIsScanning(false)} className="mt-2 w-full bg-red-500 text-white py-2 rounded-md">Cancel Scan</button>
+                                    <div className="scanner-container relative">
+                                        <div id="modal-scanner-region"></div>
+                                        <button 
+                                            onClick={toggleCamera}
+                                            className="camera-toggle"
+                                            title="Switch camera"
+                                        >
+                                            <i className="fas fa-sync-alt"></i>
+                                        </button>
+                                        <button 
+                                            type="button" 
+                                            onClick={() => setIsScanning(false)} 
+                                            className="mt-3 w-full bg-red-500 text-white py-2 rounded-md touch-button"
+                                        >
+                                            Cancel Scan
+                                        </button>
                                     </div>
                                 ) : (
                                     <div className="space-y-4">
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700">Barcode</label>
                                             <div className="mt-1 flex rounded-md shadow-sm">
-                                                <input type="text" name="barcode" value={formData.barcode} onChange={handleFormChange} placeholder="Scan or type barcode" required disabled={!!product} className="flex-1 block w-full rounded-none rounded-l-md px-3 py-2 border-gray-300 focus:ring-blue-500 focus:border-blue-500 sm:text-sm disabled:bg-gray-100"/>
-                                                <button type="button" onClick={() => setIsScanning(true)} disabled={!!product} className="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 text-sm hover:bg-gray-100 disabled:bg-gray-100 disabled:cursor-not-allowed">
+                                                <input 
+                                                    type="text" 
+                                                    name="barcode" 
+                                                    value={formData.barcode} 
+                                                    onChange={handleFormChange} 
+                                                    placeholder="Scan or type barcode" 
+                                                    required 
+                                                    disabled={!!product} 
+                                                    className="flex-1 block w-full rounded-l-lg px-3 py-2 border-gray-300 focus:ring-blue-500 focus:border-blue-500 sm:text-sm disabled:bg-gray-100 touch-input"
+                                                />
+                                                <button 
+                                                    type="button" 
+                                                    onClick={() => setIsScanning(true)} 
+                                                    disabled={!!product} 
+                                                    className="inline-flex items-center px-3 rounded-r-lg border border-l-0 border-gray-300 bg-gray-50 text-gray-500 text-sm hover:bg-gray-100 disabled:bg-gray-100 disabled:cursor-not-allowed touch-input"
+                                                >
                                                     <i className="fas fa-barcode"></i>
                                                 </button>
                                             </div>
                                         </div>
                                         
-                                        <div><label className="block text-sm font-medium text-gray-700">Product Name</label><input type="text" name="name" value={formData.name} onChange={handleFormChange} placeholder="e.g. Green Tea" required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"/></div>
-                                        <div><label className="block text-sm font-medium text-gray-700">Price (THB)</label><input type="number" step="1" name="price" value={formData.price} onChange={handleFormChange} placeholder="e.g. 25" required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"/></div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700">Product Name</label>
+                                            <input 
+                                                type="text" 
+                                                name="name" 
+                                                value={formData.name} 
+                                                onChange={handleFormChange} 
+                                                placeholder="e.g. Green Tea" 
+                                                required 
+                                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm touch-input"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700">Price (THB)</label>
+                                            <input 
+                                                type="number" 
+                                                step="1" 
+                                                name="price" 
+                                                value={formData.price} 
+                                                onChange={handleFormChange} 
+                                                placeholder="e.g. 25" 
+                                                required 
+                                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm touch-input"
+                                            />
+                                        </div>
                                         
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700">Image URL</label>
                                             <div className="mt-1 flex items-center">
-                                                <input type="url" name="imageUrl" value={formData.imageUrl} onChange={handleFormChange} placeholder="Take photo or paste URL" className="flex-1 block w-full px-3 py-2 border border-gray-300 rounded-l-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"/>
-                                                <label className="cursor-pointer inline-flex items-center px-3 py-2 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 hover:bg-gray-100">
+                                                <input 
+                                                    type="url" 
+                                                    name="imageUrl" 
+                                                    value={formData.imageUrl} 
+                                                    onChange={handleFormChange} 
+                                                    placeholder="Take photo or paste URL" 
+                                                    className="flex-1 block w-full px-3 py-2 border border-gray-300 rounded-l-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm touch-input"
+                                                />
+                                                <label className="cursor-pointer inline-flex items-center px-3 py-2 rounded-r-lg border border-l-0 border-gray-300 bg-gray-50 text-gray-500 hover:bg-gray-100 touch-input">
                                                     <i className="fas fa-camera"></i>
                                                     <input ref={imageUploadRef} type="file" accept="image/*" capture className="hidden" onChange={handleImageUpload} />
                                                 </label>
@@ -544,39 +752,40 @@
                                             {isUploading && <div className="mt-2 flex items-center text-sm text-gray-600"><Spinner small={true} /><span className="ml-2">Uploading image...</span></div>}
                                         </div>
 
-                                        <div><label className="block text-sm font-medium text-gray-700">Notes</label><textarea name="notes" value={formData.notes} onChange={handleFormChange} placeholder="(Optional)" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea></div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700">Notes</label>
+                                            <textarea 
+                                                name="notes" 
+                                                value={formData.notes} 
+                                                onChange={handleFormChange} 
+                                                placeholder="(Optional)" 
+                                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm touch-input"
+                                            ></textarea>
+                                        </div>
                                     </div>
                                 )}
-                                {isScanning && <InlineScanner onScanSuccess={handleBarcodeScanSuccess} />}
                             </div>
-                            <div className="bg-gray-100 px-6 py-3 flex justify-end space-x-3 rounded-b-lg"><button type="button" onClick={onClose} className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400">Cancel</button><button type="submit" disabled={loading || isScanning || isUploading} className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed">{loading ? <Spinner small={true} /> : 'Save'}</button></div>
+                            <div className="bg-gray-100 px-6 py-3 flex justify-end space-x-3 rounded-b-lg">
+                                <button 
+                                    type="button" 
+                                    onClick={onClose} 
+                                    className="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 touch-button"
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    type="submit" 
+                                    disabled={loading || isScanning || isUploading} 
+                                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed touch-button"
+                                >
+                                    {loading ? <Spinner small={true} /> : 'Save'}
+                                </button>
+                            </div>
                         </form>
                     </div>
                 </div>
             );
         };
-        
-        const InlineScanner = ({ onScanSuccess }) => {
-            useEffect(() => {
-                const scanner = new Html5Qrcode("modal-scanner-region");
-                const config = { fps: 10, qrbox: { width: 250, height: 250 } };
-                
-                const successCallback = (decodedText, decodedResult) => {
-                    scanner.stop().then(() => onScanSuccess(decodedText)).catch(() => onScanSuccess(decodedText));
-                };
-
-                scanner.start({ facingMode: "environment" }, config, successCallback, () => {});
-
-                return () => {
-                    if (scanner.isScanning) {
-                        scanner.stop().catch(err => console.error("Modal scanner cleanup failed.", err));
-                    }
-                };
-            }, [onScanSuccess]);
-
-            return null;
-        };
-
 
         // --- Main App Component ---
 
@@ -645,7 +854,7 @@
                                         <strong className="font-bold">Error! </strong>
                                         <span className="block sm:inline">{error}</span>
                                     </div>
-                                    <button onClick={handleLogout} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600 transition">Go to Login</button>
+                                    <button onClick={handleLogout} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600 transition touch-button">Go to Login</button>
                                 </div>
                             </div>
                         ) : (
