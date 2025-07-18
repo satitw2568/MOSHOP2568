@@ -391,7 +391,7 @@
                 setError('');
 
                 try {
-                    const resizedBlob = await resizeImage(file, 600); // Resize to max 600px
+                    const resizedBlob = await resizeImage(file, 400); // Resize to max 400px
 
                     const body = new FormData();
                     body.append('image', resizedBlob, file.name);
