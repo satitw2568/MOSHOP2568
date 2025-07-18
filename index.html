@@ -192,19 +192,22 @@
                         // Advanced constraints for better autofocus
                         advanced: [{
                             focusMode: "continuous"
+                        }, {
+                            focusDistance: 0.1 // Prioritize near objects (10cm)
                         }]
                     }
                 };
 
                 scanner.start({ facingMode: "environment" }, config, onScanSuccess, onScanFailure)
                     .catch(err => {
-                        console.error("Scanner start failed", err);
+                        console.error("Scanner start failed with advanced config:", err);
                         // Fallback for browsers that don't support advanced constraints
-                        if (err.name === "OverconstrainedError") {
+                        if (err.name === "OverconstrainedError" || err.name === "ConstraintNotSatisfiedError") {
                             console.log("Advanced constraints failed, trying basic config.");
                             const basicConfig = { fps: 15, qrbox: { width: 250, height: 250 } };
                             scanner.start({ facingMode: "environment" }, basicConfig, onScanSuccess, onScanFailure)
                                 .catch(e => {
+                                    console.error("Basic scanner start also failed:", e);
                                     setScanResult({ error: "Could not start camera. Please grant permissions." });
                                     setIsScanning(false);
                                 });
