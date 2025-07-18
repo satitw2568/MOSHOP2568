@@ -147,78 +147,87 @@
             const [searchTerm, setSearchTerm] = useState('');
             const [scanResult, setScanResult] = useState(null);
             const [isScanning, setIsScanning] = useState(false);
-            const [scannedCode, setScannedCode] = useState(null); // **NEW**: State to hold the raw scanned code
             const scannerRef = useRef(null);
 
-            // **NEW**: This effect handles the logic AFTER a code has been successfully scanned.
+            // **ROBUST SCANNER LOGIC**
             useEffect(() => {
-                if (scannedCode) {
-                    // Stop scanning immediately
-                    setIsScanning(false);
-
-                    // Process the code
-                    try {
-                        if (!products || !Array.isArray(products)) {
-                            setScanResult({ error: "Product database not loaded correctly." });
-                            return;
-                        }
-                        const foundProduct = products.find(p => p && String(p.barcode) === scannedCode);
-                        if (foundProduct) {
-                            setScanResult(foundProduct);
-                        } else {
-                            setScanResult({ notFound: true, barcode: scannedCode });
-                        }
-                    } catch (error) {
-                        setScanResult({ error: "An error occurred processing the scan." });
-                    }
-                    
-                    // Reset the scanned code so this effect can be triggered again
-                    setScannedCode(null);
+                if (!isScanning) {
+                    return;
                 }
-            }, [scannedCode, products]);
 
+                if (!scannerRef.current) {
+                    scannerRef.current = new Html5Qrcode("scanner-region");
+                }
+                const scanner = scannerRef.current;
 
-            // This effect now ONLY handles starting and stopping the camera.
-            useEffect(() => {
-                // The function that will be called on successful scan
                 const onScanSuccess = (decodedText, decodedResult) => {
-                    // Just set the code. The other useEffect will handle the rest.
-                    setScannedCode(decodedText);
-                };
-                
-                const onScanFailure = (error) => { /* Ignore non-critical scan failures */ };
-
-                if (isScanning) {
-                    if (!scannerRef.current) {
-                        scannerRef.current = new Html5Qrcode("scanner-region");
-                    }
-                    const config = { fps: 10, qrbox: { width: 250, height: 250 } };
-                    scannerRef.current.start({ facingMode: "environment" }, config, onScanSuccess, onScanFailure)
-                        .catch(err => {
-                            console.error("Scanner start failed", err);
-                            setScanResult({ error: "Could not start camera. Please grant permissions." });
+                    if (scanner.isScanning) {
+                        scanner.stop().then(() => {
+                            setIsScanning(false);
+                            try {
+                                const foundProduct = products.find(p => p && String(p.barcode) === decodedText);
+                                if (foundProduct) {
+                                    setScanResult(foundProduct);
+                                } else {
+                                    setScanResult({ notFound: true, barcode: decodedText });
+                                }
+                            } catch (error) {
+                                setScanResult({ error: "An error occurred processing the scan." });
+                            }
+                        }).catch(err => {
+                            console.error("Failed to stop scanner:", err);
                             setIsScanning(false);
                         });
-                } else {
-                    if (scannerRef.current && scannerRef.current.isScanning) {
-                        scannerRef.current.stop()
-                            .then(() => console.log("Scanner stopped successfully."))
-                            .catch(err => console.error("Scanner stop failed", err));
-                    }
-                }
-
-                // Cleanup function to ensure scanner stops when component unmounts
-                return () => {
-                    if (scannerRef.current && scannerRef.current.isScanning) {
-                        scannerRef.current.stop().catch(err => console.error("Cleanup stop failed", err));
                     }
                 };
-            }, [isScanning]);
+
+                const onScanFailure = (error) => { /* Ignore verbose errors */ };
+                
+                // **PERFORMANCE OPTIMIZED CONFIG**
+                const config = {
+                    fps: 30, // Request higher frame rate for smoother video
+                    qrbox: { width: 250, height: 250 },
+                    videoConstraints: {
+                        facingMode: "environment",
+                        // Advanced constraints for better autofocus
+                        advanced: [{
+                            focusMode: "continuous"
+                        }]
+                    }
+                };
+
+                scanner.start({ facingMode: "environment" }, config, onScanSuccess, onScanFailure)
+                    .catch(err => {
+                        console.error("Scanner start failed", err);
+                        // Fallback for browsers that don't support advanced constraints
+                        if (err.name === "OverconstrainedError") {
+                            console.log("Advanced constraints failed, trying basic config.");
+                            const basicConfig = { fps: 15, qrbox: { width: 250, height: 250 } };
+                            scanner.start({ facingMode: "environment" }, basicConfig, onScanSuccess, onScanFailure)
+                                .catch(e => {
+                                    setScanResult({ error: "Could not start camera. Please grant permissions." });
+                                    setIsScanning(false);
+                                });
+                        } else {
+                            setScanResult({ error: "Could not start camera. Please grant permissions." });
+                            setIsScanning(false);
+                        }
+                    });
+
+                return () => {
+                    if (scanner && scanner.isScanning) {
+                        scanner.stop().catch(err => console.error("Cleanup stop failed", err));
+                    }
+                };
+            }, [isScanning, products]);
+
 
             const handleReset = () => {
                 setSearchTerm('');
                 setScanResult(null);
-                setIsScanning(false);
+                if (isScanning) {
+                    setIsScanning(false);
+                }
             };
 
             const filteredProducts = products.filter(product => {
@@ -246,9 +255,10 @@
                     <div className="mb-6">
                         <button 
                             onClick={() => setIsScanning(!isScanning)}
-                            className={`w-full text-white font-bold py-4 px-4 rounded-lg shadow-lg transition-all duration-300 flex items-center justify-center text-lg ${isScanning ? 'bg-red-500' : 'bg-blue-600 pulse'}`}
+                            disabled={isScanning}
+                            className={`w-full text-white font-bold py-4 px-4 rounded-lg shadow-lg transition-all duration-300 flex items-center justify-center text-lg ${isScanning ? 'bg-gray-400' : 'bg-blue-600 pulse'} disabled:cursor-not-allowed`}
                         >
-                            {isScanning ? <><i className="fas fa-stop-circle mr-2"></i> Stop Scanning</> : <><i className="fas fa-camera mr-2"></i> Start Camera Scan</>}
+                            {isScanning ? <><i className="fas fa-spinner fa-spin mr-2"></i> Scanning...</> : <><i className="fas fa-camera mr-2"></i> Start Camera Scan</>}
                         </button>
                     </div>
 
